@@ -109,12 +109,41 @@ router.get('/me', authenticate, async (req: Request, res: Response): Promise<voi
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
       },
     });
   } catch (error) {
     console.error('Get me error:', error);
     res.status(500).json({ message: 'Failed to get user info' });
+  }
+});
+
+// PATCH /api/auth/me
+router.patch('/me', authenticate, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { profileSummary } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: { profileSummary } },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profileSummary: user.profileSummary,
+      },
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: 'Failed to update profile' });
   }
 });
 

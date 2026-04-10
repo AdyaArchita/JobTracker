@@ -23,7 +23,12 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
-      select: false, // Don't return password by default
+      select: false,
+    },
+    profileSummary: {
+      type: String,
+      maxlength: [1000, 'Profile summary must be at most 1000 characters'],
+      default: '',
     },
   },
   {

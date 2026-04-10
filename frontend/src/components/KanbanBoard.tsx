@@ -1,4 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import {
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import {
   DndContext,
   DragOverlay,
@@ -28,16 +32,27 @@ interface KanbanBoardProps {
 }
 
 const COLUMNS: ApplicationStatus[] = [
-  'Applied',
-  'Phone Screen',
-  'Interview',
-  'Offer',
-  'Rejected',
+  ApplicationStatus.Applied,
+  ApplicationStatus.PhoneScreen,
+  ApplicationStatus.Interview,
+  ApplicationStatus.Offer,
+  ApplicationStatus.Rejected,
 ];
 
 export function KanbanBoard({ applications, onCardClick }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 400;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -126,15 +141,35 @@ export function KanbanBoard({ applications, onCardClick }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-full gap-5 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
-        {COLUMNS.map((status) => (
-          <KanbanColumn
-            key={status}
-            status={status}
-            applications={columns[status]}
-            onCardClick={onCardClick}
-          />
-        ))}
+      <div className="group/kanban relative h-full">
+        {/* Navigation Chevrons */}
+        <button
+          onClick={() => handleScroll('left')}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 ml-2 rounded-full bg-white/90 dark:bg-surface-900/50 backdrop-blur-md border border-surface-200 dark:border-white/10 text-surface-900 dark:text-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/kanban:opacity-100 shadow-2xl cursor-pointer"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+
+        <button
+          onClick={() => handleScroll('right')}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 mr-2 rounded-full bg-white/90 dark:bg-surface-900/50 backdrop-blur-md border border-surface-200 dark:border-white/10 text-surface-900 dark:text-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/kanban:opacity-100 shadow-2xl cursor-pointer"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+
+        <div 
+          ref={scrollContainerRef}
+          className="flex h-full gap-5 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar"
+        >
+          {COLUMNS.map((status) => (
+            <KanbanColumn
+              key={status}
+              status={status}
+              applications={columns[status]}
+              onCardClick={onCardClick}
+            />
+          ))}
+        </div>
       </div>
 
       <DragOverlay

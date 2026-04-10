@@ -50,7 +50,7 @@ export function AddApplicationModal({
   const [formData, setFormData] = useState<CreateApplicationData>({
     company: '',
     role: '',
-    status: 'Applied',
+    status: ApplicationStatus.Applied,
     location: 'Remote',
     jobType: 'Full-time',
     dateApplied: new Date().toISOString().split('T')[0],
@@ -139,7 +139,7 @@ export function AddApplicationModal({
     setFormData({
       company: '',
       role: '',
-      status: 'Applied',
+      status: ApplicationStatus.Applied,
       location: 'Remote',
       jobType: 'Full-time',
       dateApplied: new Date().toISOString().split('T')[0],

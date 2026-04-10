@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Application, ApplicationStatus } from '../types';
-import { Building2, MapPin, Calendar, ExternalLink, Clock, Briefcase } from 'lucide-react';
+import { Building2, MapPin, Calendar, ExternalLink, Clock, Briefcase, Sparkles } from 'lucide-react';
 import { format, formatDistanceToNow, differenceInDays } from 'date-fns';
 import { MatchScore } from './ui/MatchScore';
 
@@ -101,10 +101,17 @@ export function ApplicationCard({ application, onClick }: ApplicationCardProps) 
             </span>
           )}
         </div>
-        {application.matchScore > 0 && (
+        {application.matchScore > 0 ? (
           <div title="Match Score" className="shrink-0 -mt-1 -mr-1">
              <MatchScore score={application.matchScore} size="sm" />
           </div>
+        ) : (
+          application.resumeBullets.length === 0 && (
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/20 animate-pulse shrink-0">
+               <Sparkles className="w-2.5 h-2.5 text-violet-500" />
+               <span className="text-[8px] font-extrabold text-violet-600 dark:text-violet-400 uppercase tracking-tighter">AI Optimizing...</span>
+            </div>
+          )
         )}
       </div>
 

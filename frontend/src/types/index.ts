@@ -1,13 +1,12 @@
-// ─── Application Status ─────────────────────────────────────────────
-export const APPLICATION_STATUSES = [
-  'Applied',
-  'Phone Screen',
-  'Interview',
-  'Offer',
-  'Rejected',
-] as const;
+export enum ApplicationStatus {
+  Applied = 'Applied',
+  PhoneScreen = 'Phone Screen',
+  Interview = 'Interview',
+  Offer = 'Offer',
+  Rejected = 'Rejected',
+}
 
-export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
+export const APPLICATION_STATUSES = Object.values(ApplicationStatus);
 
 export const JOB_TYPES = [
   'Full-time',
@@ -28,6 +27,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  profileSummary?: string;
 }
 
 export interface AuthResponse {
@@ -127,7 +127,7 @@ export interface KanbanColumnConfig {
 
 export const COLUMN_CONFIG: KanbanColumnConfig[] = [
   {
-    id: 'Applied',
+    id: ApplicationStatus.Applied,
     title: 'Applied',
     dotColor: 'bg-blue-400',
     countBg: 'bg-blue-500/15',
@@ -135,7 +135,7 @@ export const COLUMN_CONFIG: KanbanColumnConfig[] = [
     borderColor: 'border-blue-500/30',
   },
   {
-    id: 'Phone Screen',
+    id: ApplicationStatus.PhoneScreen,
     title: 'Phone Screen',
     dotColor: 'bg-amber-400',
     countBg: 'bg-amber-500/15',
@@ -143,7 +143,7 @@ export const COLUMN_CONFIG: KanbanColumnConfig[] = [
     borderColor: 'border-amber-500/30',
   },
   {
-    id: 'Interview',
+    id: ApplicationStatus.Interview,
     title: 'Interview',
     dotColor: 'bg-violet-400',
     countBg: 'bg-violet-500/15',
@@ -151,7 +151,7 @@ export const COLUMN_CONFIG: KanbanColumnConfig[] = [
     borderColor: 'border-violet-500/30',
   },
   {
-    id: 'Offer',
+    id: ApplicationStatus.Offer,
     title: 'Offer',
     dotColor: 'bg-emerald-400',
     countBg: 'bg-emerald-500/15',
@@ -159,7 +159,7 @@ export const COLUMN_CONFIG: KanbanColumnConfig[] = [
     borderColor: 'border-emerald-500/30',
   },
   {
-    id: 'Rejected',
+    id: ApplicationStatus.Rejected,
     title: 'Rejected',
     dotColor: 'bg-red-400',
     countBg: 'bg-red-500/15',

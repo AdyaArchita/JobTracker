@@ -29,3 +29,11 @@ export const getMe = async (): Promise<{ user: User }> => {
   const { data } = await api.get<{ user: User }>('/auth/me');
   return data;
 };
+export const updateProfile = async (
+  profileSummary: string
+): Promise<{ user: User }> => {
+  const { data } = await api.patch<{ user: User }>('/auth/me', {
+    profileSummary,
+  });
+  return data;
+};

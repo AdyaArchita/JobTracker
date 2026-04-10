@@ -127,7 +127,7 @@ export function ApplicationModal({
                     {application.priority}
                   </div>
                 )}
-                <ChevronRight className="w-4 h-4 text-surface-300" />
+                <ChevronRight className="w-4 h-4 text-surface-300 dark:text-surface-600" />
                 <span className="text-xs font-bold text-surface-400 uppercase tracking-widest">{application.seniorityLevel}</span>
               </div>
               

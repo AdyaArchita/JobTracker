@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IApplication, APPLICATION_STATUSES } from '../types';
+import { IApplication, APPLICATION_STATUSES, ApplicationStatus } from '../types';
 
 /**
  * Application Schema
@@ -27,7 +27,7 @@ const applicationSchema = new Schema<IApplication>(
     status: {
       type: String,
       enum: APPLICATION_STATUSES,
-      default: 'Applied',
+      default: ApplicationStatus.Applied,
     },
     skills: {
       type: [String],

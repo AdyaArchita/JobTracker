@@ -1,6 +1,8 @@
 import OpenAI from 'openai';
 import { env } from '../config/env';
-import { ParsedJD, AIParseResponse } from '../types';
+import { ParsedJD, AIParseResponse, AIResumeOutput } from '../types';
+import { User } from '../models/User';
+import logger from '../config/logger';
 
 /**
  * @file aiService.ts
@@ -154,20 +156,11 @@ export async function parseJobDescription(jdText: string): Promise<ParsedJD> {
 }
 
 /**
- * Interface for AI resume components
- */
-interface AIResumeOutput {
-  bullets: string[];
-  matchScore: number;
-  coverLetterSnippet: string;
-  matchReason: string;
-}
-
-/**
  * Generate tailored resume bullet points, match score, and insights.
  */
 export async function generateResumeBullets(
-  parsedJD: ParsedJD
+  parsedJD: ParsedJD,
+  userId?: string
 ): Promise<AIResumeOutput> {
   if (isMockMode) {
     await new Promise((resolve) => setTimeout(resolve, MOCK_DELAY));
@@ -178,8 +171,25 @@ export async function generateResumeBullets(
       matchReason: MOCK_MATCH.matchReason,
     };
   }
+
+  // Fetch Personalized Context
+  let candidateContext = "Software Engineer with experience in modern web technologies.";
+  if (userId) {
+    try {
+      const user = await User.findById(userId);
+      if (user?.profileSummary) {
+        candidateContext = user.profileSummary;
+        logger.info(`AI Service: Using personalized context for user ${userId}`);
+      }
+    } catch (error) {
+      logger.error(`AI Service: Failed to fetch user profile for ${userId}`, error);
+    }
+  }
+
   try {
     const userPrompt = `Generate tailored insights for this role:
+
+Candidate Background: "${candidateContext}"
 
 Company: ${parsedJD.company}
 Role: ${parsedJD.role}
@@ -292,10 +302,11 @@ Location: ${parsed.location}`;
  * and generates tailored resume bullet points in a single pass.
  */
 export async function analyzeJDAndGenerateBullets(
-  jdText: string
+  jdText: string,
+  userId?: string
 ): Promise<AIParseResponse> {
   const parsed = await parseJobDescription(jdText);
-  const resumeDetails = await generateResumeBullets(parsed);
+  const resumeDetails = await generateResumeBullets(parsed, userId);
 
   return {
     parsed,

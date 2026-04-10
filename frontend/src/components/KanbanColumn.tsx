@@ -44,7 +44,7 @@ export function KanbanColumn({
           </span>
         </div>
         
-        <button className="p-1.5 rounded-lg text-surface-400 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-surface-100 dark:hover:bg-white/5">
+        <button className="p-1.5 rounded-lg text-surface-400 hover:text-brand-500 dark:text-surface-500 dark:hover:text-brand-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-surface-100 dark:hover:bg-white/5 hover:scale-110 active:scale-95 cursor-pointer">
           <Plus className="w-4 h-4" />
         </button>
       </div>

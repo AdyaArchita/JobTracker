@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { Application } from '../models/Application';
 import { authenticate } from '../middleware/auth';
 import {
@@ -6,7 +6,10 @@ import {
   streamResumeBullets,
   parseJobDescription,
 } from '../services/aiService';
-import { APPLICATION_STATUSES } from '../types';
+import { ApplicationSchema, APPLICATION_STATUSES } from '../types';
+import { validate } from '../middleware/validate';
+import { aiRateLimiter } from '../middleware/rateLimiter';
+import logger from '../config/logger';
 
 const router = Router();
 
@@ -101,64 +104,23 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-router.post('/', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const {
-      company,
-      role,
-      status,
-      skills,
-      niceToHaveSkills,
-      seniorityLevel,
-      location,
-      jdText,
-      jdLink,
-      notes,
-      dateApplied,
-      followUpDate,
-      salaryRange,
-      resumeBullets,
-      matchScore,
-      coverLetterSnippet,
-      matchReason,
-      priority,
-      jobType,
-    } = req.body;
+router.post(
+  '/',
+  validate(ApplicationSchema),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const application = await Application.create({
+        ...req.body,
+        userId: req.userId,
+      });
 
-    if (!company || !role) {
-      res.status(400).json({ message: 'Company and role are required' });
-      return;
+      res.status(201).json(application);
+    } catch (error) {
+      logger.error('Create application error:', error);
+      res.status(500).json({ message: 'Failed to create application' });
     }
-
-    const application = await Application.create({
-      userId: req.userId,
-      company,
-      role,
-      status: status || 'Applied',
-      skills: skills || [],
-      niceToHaveSkills: niceToHaveSkills || [],
-      seniorityLevel: seniorityLevel || '',
-      location: location || 'Remote',
-      jobType: jobType || 'Full-time',
-      jdText: jdText || '',
-      jdLink: jdLink || '',
-      notes: notes || '',
-      dateApplied: dateApplied || new Date(),
-      followUpDate: followUpDate || null,
-      salaryRange: salaryRange || '',
-      resumeBullets: resumeBullets || [],
-      matchScore: matchScore || 0,
-      coverLetterSnippet: coverLetterSnippet || '',
-      matchReason: matchReason || '',
-      priority: priority || 'Medium',
-    });
-
-    res.status(201).json(application);
-  } catch (error) {
-    console.error('Create application error:', error);
-    res.status(500).json({ message: 'Failed to create application' });
   }
-});
+);
 
 router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -231,26 +193,32 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-router.post('/parse-jd', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { jdText } = req.body;
+router.post(
+  '/parse-jd',
+  aiRateLimiter,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { jdText } = req.body;
 
-    if (!jdText || jdText.trim().length < 50) {
-      res.status(400).json({
-        message: 'Please provide a job description with at least 50 characters',
-      });
-      return;
+      if (!jdText || jdText.trim().length < 50) {
+        res.status(400).json({
+          message: 'Please provide a job description with at least 50 characters',
+        });
+        return;
+      }
+
+      // Pass userId for personalized results
+      const result = await analyzeJDAndGenerateBullets(jdText, req.userId);
+
+      res.json(result);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to parse job description';
+      logger.error('Parse JD error:', error);
+      res.status(500).json({ message });
     }
-
-    const result = await analyzeJDAndGenerateBullets(jdText);
-
-    res.json(result);
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Failed to parse job description';
-    res.status(500).json({ message });
   }
-});
+);
 
 /**
  * SSE Endpoint: Streams real-time AI insights for a job description.
@@ -258,6 +226,7 @@ router.post('/parse-jd', async (req: Request, res: Response): Promise<void> => {
  */
 router.post(
   '/parse-jd-stream',
+  aiRateLimiter,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { jdText } = req.body;
@@ -360,7 +329,7 @@ router.get('/export/csv', async (req: Request, res: Response): Promise<void> => 
     );
     res.send(csv);
   } catch (error) {
-    console.error('Export CSV error:', error);
+    logger.error('Export CSV error:', error);
     res.status(500).json({ message: 'Failed to export applications' });
   }
 });
