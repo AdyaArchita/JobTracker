@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// Use the VITE_API_URL from Render, or fallback to localhost for local dev
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
