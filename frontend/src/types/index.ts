@@ -45,7 +45,8 @@ export interface Application {
   skills: string[];
   niceToHaveSkills: string[];
   seniorityLevel: string;
-  location: LocationType | string;
+  locationType: LocationType | string;
+  location: string;
   jobType: JobType | string;
   jdText: string;
   jdLink: string;
@@ -69,7 +70,8 @@ export interface CreateApplicationData {
   skills?: string[];
   niceToHaveSkills?: string[];
   seniorityLevel?: string;
-  location?: LocationType | string;
+  locationType?: LocationType | string;
+  location?: string;
   jobType?: JobType | string;
   jdText?: string;
   jdLink?: string;
@@ -93,7 +95,8 @@ export interface ParsedJD {
   skills: string[];
   niceToHaveSkills: string[];
   seniorityLevel: string;
-  location: LocationType | string;
+  locationType: LocationType | string;
+  location: string;
   jobType: JobType | string;
 }
 

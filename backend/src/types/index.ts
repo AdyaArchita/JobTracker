@@ -42,7 +42,8 @@ export const ApplicationSchema = z.object({
   skills: z.array(z.string()).default([]),
   niceToHaveSkills: z.array(z.string()).default([]),
   seniorityLevel: z.string().optional().default(''),
-  location: z.string().default('Remote'),
+  locationType: z.enum(LOCATION_TYPES).default('Remote'),
+  location: z.string().default(''),
   jobType: z.string().default('Full-time'),
   jdText: z.string().optional().default(''),
   jdLink: z.string().url().optional().or(z.literal('')).default(''),
@@ -79,6 +80,7 @@ export interface IApplication extends Document {
   skills: string[];
   niceToHaveSkills: string[];
   seniorityLevel: string;
+  locationType: LocationType;
   location: string;
   jobType: string;
   jdText: string;
@@ -105,7 +107,8 @@ export interface ParsedJD {
   skills: string[];
   niceToHaveSkills: string[];
   seniorityLevel: string;
-  location: LocationType | string;
+  locationType: LocationType | string;
+  location: string;
   jobType: JobType | string;
 }
 

@@ -29,7 +29,8 @@ const MOCK_PARSED: ParsedJD = {
   skills: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'Tailwind CSS'],
   niceToHaveSkills: ['AWS', 'Docker', 'GraphQL', 'Next.js'],
   seniorityLevel: 'Senior',
-  location: 'Remote',
+  locationType: 'Remote',
+  location: '',
   jobType: 'Full-time',
 };
 
@@ -56,15 +57,19 @@ Return ONLY a valid JSON object with this exact structure:
   "skills": ["Required skill 1", "Required skill 2", ...],
   "niceToHaveSkills": ["Nice-to-have skill 1", "Nice-to-have skill 2", ...],
   "seniorityLevel": "Entry/Mid/Senior/Lead/Staff/Principal (string)",
-  "location": "On-site/Remote/Hybrid (string)"
+  "locationType": "On-site/Remote/Hybrid (string)",
+  "location": "City/Office location name (string)"
 }
 
 Rules:
-- If information is not found, use empty string for strings and empty array for arrays
-- For jobType, choose from: Full-time, Part-time, Contract, Internship, Freelance
-- For location, choose from: On-site, Remote, Hybrid
-- For skills, separate them into truly required vs nice-to-have based on the JD language
-- For seniority level, infer from the title and requirements if not explicitly stated
+- COMPANY IDENTIFICATION: Look for phrases like "in [Company]", "at [Company]", "for [Company]", "hiring by [Company]", or "joining [Company]". 
+- AMBIGUOUS NAMES: Names like Oracle, SAP, Google, Microsoft, and Amazon are often both companies AND technical tools. If they appear in a context suggesting an employer (e.g., "dev in Oracle"), extract them as the "company".
+- If information is not found, use empty string for strings and empty array for arrays.
+- For jobType, choose from: Full-time, Part-time, Contract, Internship, Freelance.
+- For locationType, choose from: On-site, Remote, Hybrid.
+- For location, provide the specific city or office location (e.g., "Bangalore", "San Francisco"). For Remote roles, leave this EMPTY unless a specific country, region, or timezone restriction is mentioned (e.g., "India Only").
+- For skills, separate them into truly required vs nice-to-have based on the JD language.
+- For seniority level, infer from the title and requirements if not explicitly stated.
 - Be accurate — do not fabricate information not present in the JD. Even for very brief or "one-liner" inputs, always return a valid JSON object with whatever info you can find.`;
 
 const RESUME_BULLETS_SYSTEM_PROMPT = `You are an expert resume writer and career coach. Given a parsed job description and a candidate's background, generate:
@@ -138,7 +143,8 @@ export async function parseJobDescription(jdText: string): Promise<ParsedJD> {
         ? parsed.niceToHaveSkills
         : [],
       seniorityLevel: parsed.seniorityLevel || '',
-      location: parsed.location || 'Remote',
+      locationType: parsed.locationType || 'Remote',
+      location: parsed.location || '',
     };
   } catch (error: any) {
     console.error('❌ AI Service Error:', {

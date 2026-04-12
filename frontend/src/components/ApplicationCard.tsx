@@ -127,9 +127,12 @@ export function ApplicationCard({ application, onClick }: ApplicationCardProps) 
         </div>
 
         <div className="flex flex-wrap gap-2 pt-1">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-100/50 dark:bg-white/5 text-[10px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-tight">
+          <div title={application.locationType} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-100/50 dark:bg-white/5 text-[10px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-tight">
             <MapPin className="w-3 h-3" />
-            {application.location || 'Remote'}
+            {application.locationType === 'Remote' 
+              ? (application.location ? `Remote (${application.location})` : 'Remote')
+              : (application.location || application.locationType || 'Remote')
+            }
           </div>
           {application.jobType && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-100/50 dark:bg-white/5 text-[10px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-tight">

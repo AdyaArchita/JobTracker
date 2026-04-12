@@ -41,9 +41,14 @@ const applicationSchema = new Schema<IApplication>(
       type: String,
       default: '',
     },
+    locationType: {
+      type: String,
+      enum: ['On-site', 'Remote', 'Hybrid'],
+      default: 'Remote',
+    },
     location: {
       type: String,
-      default: 'Remote',
+      default: '',
     },
     jobType: {
       type: String,

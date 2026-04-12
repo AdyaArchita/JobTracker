@@ -11,6 +11,7 @@ import {
   Check,
   Zap,
   Target,
+  MapPin,
 } from 'lucide-react';
 import {
   createApplication,
@@ -51,7 +52,8 @@ export function AddApplicationModal({
     company: '',
     role: '',
     status: ApplicationStatus.Applied,
-    location: 'Remote',
+    locationType: 'Remote',
+    location: '',
     jobType: 'Full-time',
     dateApplied: new Date().toISOString().split('T')[0],
     skills: [],
@@ -106,6 +108,7 @@ export function AddApplicationModal({
             ...prev,
             company: parsedData.company || prev.company,
             role: parsedData.role || prev.role,
+            locationType: parsedData.locationType || prev.locationType,
             location: parsedData.location || prev.location,
             jobType: parsedData.jobType || prev.jobType,
             skills: parsedData.skills || prev.skills,
@@ -140,7 +143,8 @@ export function AddApplicationModal({
       company: '',
       role: '',
       status: ApplicationStatus.Applied,
-      location: 'Remote',
+      locationType: 'Remote',
+      location: '',
       jobType: 'Full-time',
       dateApplied: new Date().toISOString().split('T')[0],
       skills: [],
@@ -286,12 +290,12 @@ export function AddApplicationModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div className="space-y-1.5 flex flex-col">
               <label className="text-[10px] font-bold text-surface-500 uppercase tracking-widest ml-1">Location Setting</label>
               <select
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                value={formData.locationType}
+                onChange={(e) => setFormData({ ...formData, locationType: e.target.value as any })}
                 className="input-base !py-2.5 !text-sm border-transparent cursor-pointer"
               >
                 {LOCATION_TYPES.map(loc => (
@@ -299,6 +303,14 @@ export function AddApplicationModal({
                 ))}
               </select>
             </div>
+            <Input
+              label={formData.locationType === 'Remote' ? "Region/Timezone (Optional)" : "City/Office"}
+              id="location-input"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              placeholder={formData.locationType === 'Remote' ? "e.g. India Only, UTC-5" : "e.g. Bangalore"}
+              icon={<MapPin className="w-4 h-4" />}
+            />
             <Input
               label="Date Applied"
               type="date"

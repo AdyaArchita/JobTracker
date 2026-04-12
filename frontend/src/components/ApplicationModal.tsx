@@ -192,7 +192,12 @@ export function ApplicationModal({
             <div className="glass-card p-4 bg-surface-100/30 dark:bg-white/[0.02] border-transparent">
               <MapPin className="w-4 h-4 text-brand-500 mb-2" />
               <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wider">Location</p>
-              <p className="text-sm font-bold text-surface-900 dark:text-surface-100 mt-1">{application.location || 'Remote'}</p>
+              <p className="text-sm font-bold text-surface-900 dark:text-surface-100 mt-1">
+                {application.locationType === 'Remote' 
+                  ? (application.location ? `Remote (${application.location})` : 'Remote')
+                  : (application.location ? `${application.location} (${application.locationType})` : application.locationType)
+                }
+              </p>
             </div>
             <div className="glass-card p-4 bg-surface-100/30 dark:bg-white/[0.02] border-transparent">
               <Calendar className="w-4 h-4 text-brand-500 mb-2" />
@@ -338,12 +343,12 @@ export function ApplicationModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               <div className="space-y-1.5 flex flex-col">
                 <label className="text-[10px] font-bold text-surface-500 uppercase tracking-widest ml-1">Location Setting</label>
                 <select
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value as LocationType })}
+                  value={formData.locationType}
+                  onChange={(e) => setFormData({ ...formData, locationType: e.target.value as LocationType })}
                   className="input-base !py-2.5 !text-sm border-transparent cursor-pointer"
                 >
                   {LOCATION_TYPES.map(loc => (
@@ -351,6 +356,12 @@ export function ApplicationModal({
                   ))}
                 </select>
               </div>
+              <Input 
+                label={formData.locationType === 'Remote' ? "Region/Timezone (Optional)" : "City/Office"}
+                value={formData.location || ''} 
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
+                placeholder={formData.locationType === 'Remote' ? "e.g. US Only, UTC-5" : "e.g. Bangalore"}
+              />
               <Input label="Salary Range" value={formData.salaryRange || ''} onChange={(e) => setFormData({ ...formData, salaryRange: e.target.value })} />
               <Input
                 label="Date Applied"
