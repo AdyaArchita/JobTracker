@@ -2,6 +2,20 @@
 
 A modern, production-ready MERN stack application for tracking job applications on a Kanban board with intelligent AI assistance.
 
+## 🔗 Live Demo
+
+- **Frontend**: [Live Website (Render)](https://jobtracker-frontend-574d.onrender.com)
+- **Backend API**: [API Server (Render)](https://jobtracker-i070.onrender.com)
+
+## ✅ Submission Requirements Checklist
+
+| Requirement | Status | Implementation Detail |
+| :--- | :---: | :--- |
+| **Real User Authentication** | ✅ | JWT-based Register/Login with bcryptjs hashing. |
+| **Proper Backend System** | ✅ | Robust Node.js/Express API with structured MVC architecture. |
+| **Database Integration** | ✅ | MongoDB Atlas integration with Mongoose schemas. |
+| **Deployment** | ✅ | Fully deployed and operational on Render. |
+
 ## 🌟 What Makes This Project Stand Out
 
 Unlike a standard Kanban board, this project acts as an intelligent career copilot:
